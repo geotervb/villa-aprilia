@@ -1,20 +1,27 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   <title>Alpe Selle – Potree</title>
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- CSS -->
-  <link rel="stylesheet" type="text/css" href="./libs/potree/potree.css">
-  <link rel="stylesheet" type="text/css" href="./libs/jquery-ui/jquery-ui.min.css">
-  <link rel="stylesheet" type="text/css" href="./libs/openlayers3/ol.css">
-  <link rel="stylesheet" type="text/css" href="./libs/spectrum/spectrum.css">
-  <link rel="stylesheet" type="text/css" href="./libs/jstree/themes/mixed/style.css">
+  <link rel="stylesheet" href="./libs/potree/potree.css" />
+  <link rel="stylesheet" href="./libs/jquery-ui/jquery-ui.min.css" />
+  <link rel="stylesheet" href="./libs/openlayers3/ol.css" />
+  <link rel="stylesheet" href="./libs/spectrum/spectrum.css" />
+  <link rel="stylesheet" href="./libs/jstree/themes/mixed/style.css" />
+
+  <!-- ✅ CSS CRITICO: evita altezza 0 -->
+  <style>
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+    #potree_render_area { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+    #potree_sidebar_container { position: absolute; right: 0; top: 0; height: 100%; z-index: 10; }
+    .potree_container { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+  </style>
 </head>
 
-<body style="margin:0; overflow:hidden;">
+<body>
 
   <!-- JS -->
   <script src="./libs/jquery/jquery-3.1.1.min.js"></script>
@@ -31,16 +38,14 @@
   <script src="./libs/potree/potree.js"></script>
 
   <!-- Container -->
-  <div class="potree_container" style="position:absolute; width:100%; height:100%; left:0; top:0;">
+  <div class="potree_container">
     <div id="potree_render_area"></div>
     <div id="potree_sidebar_container"></div>
   </div>
 
   <script>
     // Viewer
-    const viewer = new Potree.Viewer(
-      document.getElementById("potree_render_area")
-    );
+    const viewer = new Potree.Viewer(document.getElementById("potree_render_area"));
 
     viewer.setEDLEnabled(false);
     viewer.setFOV(60);
@@ -48,7 +53,6 @@
     viewer.setBackground("gradient");
     viewer.loadSettingsFromURL();
 
-    // GUI
     viewer.loadGUI(() => {
       viewer.setLanguage("it");
       $("#menu_appearance").next().show();
@@ -57,21 +61,17 @@
       viewer.toggleSidebar();
     });
 
-    // Point cloud Alpe Selle
-    Potree.loadPointCloud(
-      "./pointclouds/alpe_selle/cloud.js",
-      "Alpe Selle",
-      e => {
-        const pointcloud = e.pointcloud;
-        viewer.scene.addPointCloud(pointcloud);
+    // Point cloud
+    Potree.loadPointCloud("./pointclouds/alpe_selle/cloud.js", "Alpe Selle", (e) => {
+      const pointcloud = e.pointcloud;
+      viewer.scene.addPointCloud(pointcloud);
 
-        const material = pointcloud.material;
-        material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
-        material.size = 1.0;
+      const material = pointcloud.material;
+      material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+      material.size = 1.0;
 
-        viewer.fitToScreen();
-      }
-    );
+      viewer.fitToScreen();
+    });
   </script>
 
 </body>
